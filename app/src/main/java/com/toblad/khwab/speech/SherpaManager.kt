@@ -4,34 +4,43 @@ import android.content.Context
 import android.util.Log
 
 class SherpaManager(
-    private val context: Context
+        private val context: Context
 ) {
 
-    private val modelLoader = ModelLoader(context)
-    private val audioRecorder = AudioRecorder()
-    private val speechRecognizer = SpeechRecognizer()
+        private val modelLoader = ModelLoader(context)
+            private val audioRecorder = AudioRecorder()
+                private val speechRecognizer = SpeechRecognizer(context)
 
-    companion object {
-        private const val TAG = "SherpaManager"
-    }
+                    companion object {
+                                private const val TAG = "SherpaManager"
+                    }
 
-    fun initialize() {
-        Log.d(TAG, "Initializing Speech Engine...")
+                        fun initialize() {
+                                    Log.d(TAG, "Initializing Speech Engine...")
 
-        modelLoader.loadModel()
+                                            val modelLoaded = modelLoader.loadModel()
 
-        Log.d(TAG, "Speech Engine Ready")
-    }
+                                                    if (!modelLoaded) {
+                                                                    Log.e(TAG, "Failed to load speech model.")
+                                                                                return
+                                                    }
 
-    fun startListening() {
-        Log.d(TAG, "Start Listening")
+                                                            speechRecognizer.initialize()
 
-        audioRecorder.startRecording()
-    }
+                                                                    Log.d(TAG, "Speech Engine Ready")
+                        }
 
-    fun stopListening() {
-        Log.d(TAG, "Stop Listening")
+                            fun startListening() {
+                                        Log.d(TAG, "Start Listening")
 
-        audioRecorder.stopRecording()
-    }
+                                                audioRecorder.startRecording()
+                                                        speechRecognizer.start()
+                            }
+
+                                fun stopListening() {
+                                            Log.d(TAG, "Stop Listening")
+
+                                                    audioRecorder.stopRecording()
+                                                            speechRecognizer.stop()
+                                }
 }

@@ -4,33 +4,62 @@ import android.content.Context
 import android.util.Log
 
 class ModelLoader(
-    private val context: Context
+        private val context: Context
 ) {
 
-    companion object {
-        private const val TAG = "ModelLoader"
-    }
+        companion object {
+                    private const val TAG = "ModelLoader"
 
-    fun loadModel() {
-        try {
+                            // Folder inside assets
+                                    private const val MODEL_DIR = "models/zipformer"
 
-            val files = context.assets.list("models/whisper")
+                                            // Model filenames
+                                                    const val ENCODER =
+                                                                "encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
 
-            if (files.isNullOrEmpty()) {
-                Log.d(TAG, "No model files found.")
-                return
-            }
+                                                                        const val DECODER =
+                                                                                    "decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
 
-            Log.d(TAG, "===== Whisper Model Files =====")
+                                                                                            const val JOINER =
+                                                                                                        "joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
 
-            files.forEach {
-                Log.d(TAG, it)
-            }
-
-            Log.d(TAG, "===============================")
-
-        } catch (e: Exception) {
-            Log.e(TAG, "Error loading model", e)
+                                                                                                                const val TOKENS = "tokens.txt"
         }
-    }
-}
+
+            fun loadModel(): Boolean {
+                        return try {
+
+                                        val files = context.assets.list(MODEL_DIR) ?: emptyArray()
+
+                                                    if (files.isEmpty()) {
+                                                                        Log.e(TAG, "Model folder is empty!")
+                                                                                        return false
+                                                    }
+
+                                                                val requiredFiles = listOf(
+                                                                                    ENCODER,
+                                                                                                    DECODER,
+                                                                                                                    JOINER,
+                                                                                                                                    TOKENS
+                                                                )
+
+                                                                            for (file in requiredFiles) {
+                                                                                                if (!files.contains(file)) {
+                                                                                                                        Log.e(TAG, "Missing model file: $file")
+                                                                                                                                            return false
+                                                                                                }
+                                                                            }
+
+                                                                                        Log.d(TAG, "Zipformer model verified successfully.")
+                                                                                                    true
+
+                        } catch (e: Exception) {
+                                        Log.e(TAG, "Failed to load model.", e)
+                                                    false
+                        }
+            }
+
+                fun getModelDirectory(): String {
+                            return MODEL_DIR
+                }
+}                         

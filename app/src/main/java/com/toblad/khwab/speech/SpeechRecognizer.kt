@@ -1,8 +1,25 @@
 package com.toblad.khwab.speech
 
-class SpeechRecognizer {
+import android.content.Context
+import android.util.Log
 
-    fun recognize() {
-        // We'll add recognition logic later
-    }
+class SpeechRecognizer(
+        private val context: Context
+) {
+
+        companion object {
+                    private const val TAG = "SpeechRecognizer"
+        }
+
+            fun initialize() {
+                        Log.d(TAG, "Initializing OnlineRecognizer...")
+            }
+
+                fun start() {
+                            Log.d(TAG, "Recognition started.")
+                }
+
+                    fun stop() {
+                                Log.d(TAG, "Recognition stopped.")
+                    }
 }
