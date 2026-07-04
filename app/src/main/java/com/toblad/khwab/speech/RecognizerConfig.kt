@@ -9,13 +9,17 @@ object RecognizerConfig {
     const val MODEL_DIR = "models/zipformer"
 
     const val ENCODER =
-        "encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
+        "$MODEL_DIR/encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
 
     const val DECODER =
-        "decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
+        "$MODEL_DIR/decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
 
     const val JOINER =
-        "joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
+        "$MODEL_DIR/joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
 
-    const val TOKENS = "tokens.txt"
+    const val TOKENS =
+        "$MODEL_DIR/tokens.txt"
+
+    const val BPE =
+        "$MODEL_DIR/bpe.model"
 }

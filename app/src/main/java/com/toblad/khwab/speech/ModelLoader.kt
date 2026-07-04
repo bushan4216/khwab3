@@ -2,64 +2,71 @@ package com.toblad.khwab.speech
 
 import android.content.Context
 import android.util.Log
+import java.io.File
+import java.io.FileOutputStream
 
 class ModelLoader(
-        private val context: Context
+    private val context: Context
 ) {
 
-        companion object {
-                    private const val TAG = "ModelLoader"
+    companion object {
+        private const val TAG = "ModelLoader"
+        private const val MODEL_DIR = "models/zipformer"
+    }
 
-                            // Folder inside assets
-                                    private const val MODEL_DIR = "models/zipformer"
+    fun loadModel(): Boolean {
+        return try {
 
-                                            // Model filenames
-                                                    const val ENCODER =
-                                                                "encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
+            copyAsset("encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx")
+            copyAsset("decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx")
+            copyAsset("joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx")
+            copyAsset("tokens.txt")
+            copyAsset("bpe.model")
 
-                                                                        const val DECODER =
-                                                                                    "decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
+            Log.d(TAG, "All model files loaded.")
 
-                                                                                            const val JOINER =
-                                                                                                        "joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx"
+            true
 
-                                                                                                                const val TOKENS = "tokens.txt"
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load model", e)
+            false
+        }
+    }
+
+    private fun copyAsset(fileName: String): String {
+
+        val outFile = File(context.filesDir, fileName)
+
+        if (outFile.exists()) {
+            return outFile.absolutePath
         }
 
-            fun loadModel(): Boolean {
-                        return try {
-
-                                        val files = context.assets.list(MODEL_DIR) ?: emptyArray()
-
-                                                    if (files.isEmpty()) {
-                                                                        Log.e(TAG, "Model folder is empty!")
-                                                                                        return false
-                                                    }
-
-                                                                val requiredFiles = listOf(
-                                                                                    ENCODER,
-                                                                                                    DECODER,
-                                                                                                                    JOINER,
-                                                                                                                                    TOKENS
-                                                                )
-
-                                                                            for (file in requiredFiles) {
-                                                                                                if (!files.contains(file)) {
-                                                                                                                        Log.e(TAG, "Missing model file: $file")
-                                                                                                                                            return false
-                                                                                                }
-                                                                            }
-
-                                                                                        Log.d(TAG, "Zipformer model verified successfully.")
-                                                                                                    true
-
-                        } catch (e: Exception) {
-                                        Log.e(TAG, "Failed to load model.", e)
-                                                    false
-                        }
+        context.assets.open("$MODEL_DIR/$fileName").use { input ->
+            FileOutputStream(outFile).use { output ->
+                input.copyTo(output)
             }
+        }
 
-                fun getModelDirectory(): String {
-                            return MODEL_DIR
-                }
-}                         
+        return outFile.absolutePath
+    }
+
+    fun encoderPath() =
+        File(context.filesDir,
+            "encoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx").absolutePath
+
+    fun decoderPath() =
+        File(context.filesDir,
+            "decoder-epoch-99-avg-1-chunk-16-left-128.int8.onnx").absolutePath
+
+    fun joinerPath() =
+        File(context.filesDir,
+            "joiner-epoch-99-avg-1-chunk-16-left-128.int8.onnx").absolutePath
+
+    fun tokensPath() =
+        File(context.filesDir,
+            "tokens.txt").absolutePath
+
+    fun bpePath() =
+        File(context.filesDir,
+            "bpe.model").absolutePath
+}

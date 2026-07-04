@@ -4,43 +4,52 @@ import android.content.Context
 import android.util.Log
 
 class SherpaManager(
-        private val context: Context
+    private val context: Context
 ) {
 
-        private val modelLoader = ModelLoader(context)
-            private val audioRecorder = AudioRecorder()
-                private val speechRecognizer = SpeechRecognizer(context)
+    companion object {
+        private const val TAG = "SherpaManager"
+    }
 
-                    companion object {
-                                private const val TAG = "SherpaManager"
-                    }
+    private val audioRecorder = AudioRecorder()
+    private val sherpaEngine = SherpaEngine(context)
 
-                        fun initialize() {
-                                    Log.d(TAG, "Initializing Speech Engine...")
+    fun initialize(): Boolean {
 
-                                            val modelLoaded = modelLoader.loadModel()
+        Log.d(TAG, "Initializing Sherpa Manager...")
 
-                                                    if (!modelLoaded) {
-                                                                    Log.e(TAG, "Failed to load speech model.")
-                                                                                return
-                                                    }
+        val initialized = sherpaEngine.initialize()
 
-                                                            speechRecognizer.initialize()
+        if (!initialized) {
+            Log.e(TAG, "Failed to initialize Sherpa Engine")
+            return false
+        }
 
-                                                                    Log.d(TAG, "Speech Engine Ready")
-                        }
+        Log.d(TAG, "Sherpa Manager initialized successfully")
+        return true
+    }
 
-                            fun startListening() {
-                                        Log.d(TAG, "Start Listening")
+    fun startListening() {
 
-                                                audioRecorder.startRecording()
-                                                        speechRecognizer.start()
-                            }
+        Log.d(TAG, "Starting listening...")
 
-                                fun stopListening() {
-                                            Log.d(TAG, "Stop Listening")
+        audioRecorder.startRecording()
+        sherpaEngine.start()
+    }
 
-                                                    audioRecorder.stopRecording()
-                                                            speechRecognizer.stop()
-                                }
+    fun stopListening() {
+
+        Log.d(TAG, "Stopping listening...")
+
+        audioRecorder.stopRecording()
+        sherpaEngine.stop()
+    }
+
+    fun release() {
+
+        Log.d(TAG, "Releasing Sherpa Manager...")
+
+        audioRecorder.stopRecording()
+        sherpaEngine.release()
+    }
 }
